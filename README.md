@@ -21,15 +21,15 @@
 
 [![Build Status][ti]][tl] [![Apache License][li]][ll] [![Maven Central][mi]][ml] [![Javadoc][ji]][jl]
 
-**Apache Fluo Bytes is an API project with the goal of providing an extremely
-stable library for handling bytes, suitable for use in [Apache Fluo][fluo] and
+**Apache Fluo Bytes is a simple library with the goal of providing an extremely
+stable API for handling bytes, suitable for use in [Apache Fluo][fluo] and
 other projects' APIs.**
 
 ## Features and Goals
 
 This project aims to fill a void in Java, by providing convenient objects to
-represent a string of bytes and associated utility classes for situations when
-a raw byte array is not appropriate.
+represent a sequence of bytes and associated utility classes for situations
+when a raw byte array is not appropriate.
 
 Specifically, it provides a `ByteSequence` interface, analogous to Java's
 `CharSequence`, an immutable `Bytes` implementation analogous to Java's
