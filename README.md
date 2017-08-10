@@ -69,10 +69,10 @@ following principles:
 * Using [Semantic Versioning 2.0.0][semver] to make strong declarations about
   backwards-compatibility
 * Strongly avoid breaking changes (avoid major version bumps), so that projects
-  can converge on the latest version required by their code and that of their
-  dependencies, without risk of incompatibility
-* No runtime dependencies to use the library, to eliminate any potential
-  conflicts from transitive dependencies
+  can converge on the latest version of this library required by their code and
+  that of their dependencies, without risk of incompatibility
+* No runtime dependencies itself, to eliminate any potential conflicts from
+  transitive dependencies if this library is used
 * Use generic package naming scheme not tied to the Maven coordinates, in case
   the project relocates or becomes independent of Fluo in the future
 * Practice review-then-commit during development to protect against poor
