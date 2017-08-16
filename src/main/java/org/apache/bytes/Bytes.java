@@ -31,14 +31,17 @@ import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * Represents bytes in Fluo. Bytes is an immutable wrapper around a byte array. Bytes always copies on creation and never lets its internal byte array escape.
- * Its modeled after Java's String which is an immutable wrapper around a char array. It was created because there is nothing in Java like it at the moment. Its
- * very nice having this immutable type, it avoids having to do defensive copies to ensure correctness. Maybe one day Java will have equivalents of String,
- * StringBuilder, and Charsequence for bytes.
+ * Represents bytes in Fluo. Bytes is an immutable wrapper around a byte array. Bytes always copies
+ * on creation and never lets its internal byte array escape. Its modeled after Java's String which
+ * is an immutable wrapper around a char array. It was created because there is nothing in Java like
+ * it at the moment. Its very nice having this immutable type, it avoids having to do defensive
+ * copies to ensure correctness. Maybe one day Java will have equivalents of String, StringBuilder,
+ * and Charsequence for bytes.
  *
  * <p>
- * The reason Fluo did not use ByteBuffer is because its not immutable, even a read only ByteBuffer has a mutable position. This makes ByteBuffer unsuitable for
- * place where an immutable data type is desirable, like a key for a map.
+ * The reason Fluo did not use ByteBuffer is because its not immutable, even a read only ByteBuffer
+ * has a mutable position. This makes ByteBuffer unsuitable for place where an immutable data type
+ * is desirable, like a key for a map.
  *
  * <p>
  * Bytes.EMPTY is used to represent a Bytes object with no data.
@@ -73,11 +76,9 @@ public final class Bytes extends AbstractByteSequence implements Comparable<Byte
   /**
    * Gets a byte within this sequence of bytes
    *
-   * @param i
-   *          index into sequence
+   * @param i index into sequence
    * @return byte
-   * @throws IllegalArgumentException
-   *           if i is out of range
+   * @throws IllegalArgumentException if i is out of range
    */
   @Override
   public byte byteAt(int i) {
@@ -96,10 +97,8 @@ public final class Bytes extends AbstractByteSequence implements Comparable<Byte
   /**
    * Returns a portion of the Bytes object
    *
-   * @param start
-   *          index of subsequence start (inclusive)
-   * @param end
-   *          index of subsequence end (exclusive)
+   * @param start index of subsequence start (inclusive)
+   * @param end index of subsequence end (exclusive)
    */
   @Override
   public Bytes subSequence(int begin, int end) {
@@ -119,8 +118,7 @@ public final class Bytes extends AbstractByteSequence implements Comparable<Byte
   /**
    * Provides a String representation, decoding these bytes with the provided charset
    *
-   * @param charset
-   *          the character set to decode these bytes
+   * @param charset the character set to decode these bytes
    */
   public String toString(Charset charset) {
     if (charset == StandardCharsets.UTF_8) {
@@ -174,9 +172,11 @@ public final class Bytes extends AbstractByteSequence implements Comparable<Byte
   }
 
   /**
-   * Compares this to the passed bytes, byte by byte, returning a negative, zero, or positive result if the first sequence is less than, equal to, or greater
-   * than the second. The comparison is performed starting with the first byte of each sequence, and proceeds until a pair of bytes differs, or one sequence
-   * runs out of byte (is shorter). A shorter sequence is considered less than a longer one.
+   * Compares this to the passed bytes, byte by byte, returning a negative, zero, or positive result
+   * if the first sequence is less than, equal to, or greater than the second. The comparison is
+   * performed starting with the first byte of each sequence, and proceeds until a pair of bytes
+   * differs, or one sequence runs out of byte (is shorter). A shorter sequence is considered less
+   * than a longer one.
    *
    * @return comparison result
    */
@@ -199,7 +199,8 @@ public final class Bytes extends AbstractByteSequence implements Comparable<Byte
   }
 
   /**
-   * Returns true if, and only if, this Bytes object contains the same byte sequence as another Bytes object
+   * Returns true if, and only if, this Bytes object contains the same byte sequence as another
+   * Bytes object
    */
   @Override
   public final boolean equals(Object other) {
@@ -227,12 +228,9 @@ public final class Bytes extends AbstractByteSequence implements Comparable<Byte
   /**
    * Creates a Bytes object by copying the data of a subsequence of the given byte array
    *
-   * @param data
-   *          Byte data
-   * @param offset
-   *          Starting offset in byte array (inclusive)
-   * @param length
-   *          Number of bytes to include
+   * @param data Byte data
+   * @param offset Starting offset in byte array (inclusive)
+   * @param length Number of bytes to include
    */
   public static final Bytes of(byte[] data, int offset, int length) {
     Objects.requireNonNull(data);
@@ -247,8 +245,8 @@ public final class Bytes extends AbstractByteSequence implements Comparable<Byte
   /**
    * Creates a Bytes object by copying the data of the given ByteBuffer.
    *
-   * @param bb
-   *          Data will be read from this ByteBuffer in such a way that its position is not changed.
+   * @param bb Data will be read from this ByteBuffer in such a way that its position is not
+   *        changed.
    */
   public static final Bytes of(ByteBuffer bb) {
     Objects.requireNonNull(bb);
@@ -257,7 +255,9 @@ public final class Bytes extends AbstractByteSequence implements Comparable<Byte
     }
     byte[] data;
     if (bb.hasArray()) {
-      data = Arrays.copyOfRange(bb.array(), bb.position() + bb.arrayOffset(), bb.limit() + bb.arrayOffset());
+      data =
+          Arrays.copyOfRange(bb.array(), bb.position() + bb.arrayOffset(),
+              bb.limit() + bb.arrayOffset());
     } else {
       data = new byte[bb.remaining()];
       // duplicate so that it does not change position
@@ -319,8 +319,7 @@ public final class Bytes extends AbstractByteSequence implements Comparable<Byte
   /**
    * Checks if this has the passed prefix
    *
-   * @param prefix
-   *          is a Bytes object to compare to this
+   * @param prefix is a Bytes object to compare to this
    * @return true or false
    */
   public boolean startsWith(Bytes prefix) {
@@ -342,8 +341,7 @@ public final class Bytes extends AbstractByteSequence implements Comparable<Byte
   /**
    * Checks if this has the passed suffix
    *
-   * @param suffix
-   *          is a Bytes object to compare to this
+   * @param suffix is a Bytes object to compare to this
    * @return true or false
    */
   public boolean endsWith(Bytes suffix) {
@@ -364,36 +362,32 @@ public final class Bytes extends AbstractByteSequence implements Comparable<Byte
   }
 
   /**
-   * Copy entire Bytes object to specific byte array. Uses the specified offset in the dest byte array to start the copy.
+   * Copy entire Bytes object to specific byte array. Uses the specified offset in the dest byte
+   * array to start the copy.
    *
-   * @param dest
-   *          destination array
-   * @param destPos
-   *          starting position in the destination data.
-   * @exception IndexOutOfBoundsException
-   *              if copying would cause access of data outside array bounds.
-   * @exception NullPointerException
-   *              if either <code>src</code> or <code>dest</code> is <code>null</code>.
+   * @param dest destination array
+   * @param destPos starting position in the destination data.
+   * @exception IndexOutOfBoundsException if copying would cause access of data outside array
+   *            bounds.
+   * @exception NullPointerException if either <code>src</code> or <code>dest</code> is
+   *            <code>null</code>.
    */
   public void copyTo(byte[] dest, int destPos) {
     arraycopy(0, dest, destPos, this.length());
   }
 
   /**
-   * Copy a subsequence of Bytes to specific byte array. Uses the specified offset in the dest byte array to start the copy.
+   * Copy a subsequence of Bytes to specific byte array. Uses the specified offset in the dest byte
+   * array to start the copy.
    *
-   * @param start
-   *          index of subsequence start (inclusive)
-   * @param end
-   *          index of subsequence end (exclusive)
-   * @param dest
-   *          destination array
-   * @param destPos
-   *          starting position in the destination data.
-   * @exception IndexOutOfBoundsException
-   *              if copying would cause access of data outside array bounds.
-   * @exception NullPointerException
-   *              if either <code>src</code> or <code>dest</code> is <code>null</code>.
+   * @param start index of subsequence start (inclusive)
+   * @param end index of subsequence end (exclusive)
+   * @param dest destination array
+   * @param destPos starting position in the destination data.
+   * @exception IndexOutOfBoundsException if copying would cause access of data outside array
+   *            bounds.
+   * @exception NullPointerException if either <code>src</code> or <code>dest</code> is
+   *            <code>null</code>.
    */
   public void copyTo(int start, int end, byte[] dest, int destPos) {
     // this.subSequence(start, end).copyTo(dest, destPos) would allocate another Bytes object

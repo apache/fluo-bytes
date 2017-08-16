@@ -47,6 +47,7 @@
   </issueManagement>
   <properties>
     <findbugs.maxRank>20</findbugs.maxRank>
+    <formatter.config>${project.basedir}/src/main/build-resources/eclipse-formatter.xml</formatter.config>
     <mdep.failOnWarning>true</mdep.failOnWarning>
     <releaseProfiles>fluo-bytes-release</releaseProfiles>
   </properties>

@@ -39,8 +39,7 @@ public class BytesBuilder extends AbstractByteSequence {
   /**
    * Construct a builder with the specified initial capacity
    *
-   * @param initialCapacity
-   *          the initial size of the internal buffer
+   * @param initialCapacity the initial size of the internal buffer
    */
   public BytesBuilder(int initialCapacity) {
     ba = new byte[initialCapacity];
@@ -76,7 +75,7 @@ public class BytesBuilder extends AbstractByteSequence {
 
   public BytesBuilder append(CharSequence cs, Charset charset) {
     if (cs instanceof String) {
-      return append(cs, charset);
+      return append((String) cs, charset);
     }
 
     ByteBuffer bb = charset.encode(CharBuffer.wrap(cs));
@@ -119,8 +118,7 @@ public class BytesBuilder extends AbstractByteSequence {
   /**
    * Append a single byte.
    *
-   * @param b
-   *          take the lower 8 bits and appends it.
+   * @param b take the lower 8 bits and appends it.
    * @return self
    */
   public BytesBuilder append(int b) {
@@ -133,12 +131,9 @@ public class BytesBuilder extends AbstractByteSequence {
   /**
    * Append a section of bytes from array
    *
-   * @param bytes
-   *          - bytes to be appended
-   * @param offset
-   *          - start of bytes to be appended
-   * @param length
-   *          - how many bytes from 'offset' to be appended
+   * @param bytes - bytes to be appended
+   * @param offset - start of bytes to be appended
+   * @param length - how many bytes from 'offset' to be appended
    * @return self
    */
   public BytesBuilder append(byte[] bytes, int offset, int length) {
@@ -151,10 +146,8 @@ public class BytesBuilder extends AbstractByteSequence {
   /**
    * Append a sequence of bytes from an InputStream
    *
-   * @param in
-   *          data source to append from
-   * @param length
-   *          number of bytes to read from data source
+   * @param in data source to append from
+   * @param length number of bytes to read from data source
    * @return self
    */
   public BytesBuilder append(InputStream in, int length) throws IOException {
@@ -167,8 +160,7 @@ public class BytesBuilder extends AbstractByteSequence {
   /**
    * Append data from a ByteBuffer
    *
-   * @param bb
-   *          data is read from the ByteBuffer in such a way that its position is not changed.
+   * @param bb data is read from the ByteBuffer in such a way that its position is not changed.
    * @return self
    */
   public BytesBuilder append(ByteBuffer bb) {
@@ -180,7 +172,8 @@ public class BytesBuilder extends AbstractByteSequence {
   }
 
   /**
-   * Sets the point at which appending will start. This method can shrink or grow the ByteBuilder from its current state. If it grows it will zero pad.
+   * Sets the point at which appending will start. This method can shrink or grow the ByteBuilder
+   * from its current state. If it grows it will zero pad.
    */
   public void setLength(int newLen) {
     if (newLen < 0) {
