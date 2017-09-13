@@ -97,7 +97,7 @@ public final class Bytes extends AbstractByteSequence implements Comparable<Byte
   /**
    * Returns a portion of the Bytes object
    *
-   * @param start index of subsequence start (inclusive)
+   * @param begin index of subsequence begin (inclusive)
    * @param end index of subsequence end (exclusive)
    */
   @Override
@@ -266,10 +266,14 @@ public final class Bytes extends AbstractByteSequence implements Comparable<Byte
     return new Bytes(data);
   }
 
-  /**
-   * Creates a Bytes object by copying the data of the CharSequence and encoding it using UTF-8.
-   */
-  public static final Bytes of(CharSequence cs) {
+  public static final Bytes of(CharSequence cs, Charset charset) {
+    if (cs instanceof String) {
+      return of((String) cs, charset);
+    }
+
+    Objects.requireNonNull(cs);
+    Objects.requireNonNull(charset);
+
     if (cs instanceof String) {
       return of((String) cs);
     }
@@ -279,16 +283,23 @@ public final class Bytes extends AbstractByteSequence implements Comparable<Byte
       return EMPTY;
     }
 
-    ByteBuffer bb = StandardCharsets.UTF_8.encode(CharBuffer.wrap(cs));
+    ByteBuffer bb = charset.encode(CharBuffer.wrap(cs));
 
+    // this byte buffer has never escaped so can use its byte array directly
     if (bb.hasArray()) {
-      // this byte buffer has never escaped so can use its byte array directly
       return Bytes.of(bb.array(), bb.position() + bb.arrayOffset(), bb.limit());
     } else {
       byte[] data = new byte[bb.remaining()];
       bb.get(data);
       return new Bytes(data);
     }
+  }
+
+  /**
+   * Creates a Bytes object by copying the data of the CharSequence and encoding it using UTF-8.
+   */
+  public static final Bytes of(CharSequence cs) {
+    return of(cs, StandardCharsets.UTF_8);
   }
 
   /**
@@ -307,6 +318,9 @@ public final class Bytes extends AbstractByteSequence implements Comparable<Byte
    * Creates a Bytes object by copying the value of the given String with a given charset
    */
   public static final Bytes of(String s, Charset c) {
+    if (c == StandardCharsets.UTF_8) {
+      return of(s);
+    }
     Objects.requireNonNull(s);
     Objects.requireNonNull(c);
     if (s.length() == 0) {
@@ -322,8 +336,8 @@ public final class Bytes extends AbstractByteSequence implements Comparable<Byte
    * @param prefix is a Bytes object to compare to this
    * @return true or false
    */
-  public boolean startsWith(Bytes prefix) {
-    Objects.requireNonNull(prefix, "startWith(Bytes prefix) cannot have null parameter");
+  public boolean beginsWith(Bytes prefix) {
+    Objects.requireNonNull(prefix, "beginsWith(Bytes prefix) cannot have null parameter");
 
     if (prefix.length() > this.length()) {
       return false;
@@ -380,7 +394,7 @@ public final class Bytes extends AbstractByteSequence implements Comparable<Byte
    * Copy a subsequence of Bytes to specific byte array. Uses the specified offset in the dest byte
    * array to start the copy.
    *
-   * @param start index of subsequence start (inclusive)
+   * @param begin index of subsequence start (inclusive)
    * @param end index of subsequence end (exclusive)
    * @param dest destination array
    * @param destPos starting position in the destination data.
@@ -389,14 +403,14 @@ public final class Bytes extends AbstractByteSequence implements Comparable<Byte
    * @exception NullPointerException if either <code>src</code> or <code>dest</code> is
    *            <code>null</code>.
    */
-  public void copyTo(int start, int end, byte[] dest, int destPos) {
+  public void copyTo(int begin, int end, byte[] dest, int destPos) {
     // this.subSequence(start, end).copyTo(dest, destPos) would allocate another Bytes object
-    arraycopy(start, dest, destPos, end - start);
+    arraycopy(begin, dest, destPos, end - begin);
   }
 
-  private void arraycopy(int start, byte[] dest, int destPos, int length) {
+  private void arraycopy(int begin, byte[] dest, int destPos, int length) {
     // since dest is byte[], we can't get the ArrayStoreException
-    System.arraycopy(this.data, start, dest, destPos, length);
+    System.arraycopy(this.data, begin, dest, destPos, length);
   }
 
 }

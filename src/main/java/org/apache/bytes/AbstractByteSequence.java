@@ -27,6 +27,8 @@ import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
 /**
+ * Abstract class for implementations of {@link ByteSequence}.
+ *
  * @since 1.0.0
  */
 abstract class AbstractByteSequence implements ByteSequence {
@@ -55,8 +57,7 @@ abstract class AbstractByteSequence implements ByteSequence {
   }
 
   @Override
-  public IntStream bytes() {
-    // return int stream to avoid auto-boxing
+  public IntStream intStream() {
     class ByteIterator implements PrimitiveIterator.OfInt {
       int cur = 0;
 

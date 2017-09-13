@@ -20,16 +20,46 @@ package org.apache.bytes;
 import java.util.stream.IntStream;
 
 /**
+ * Interface representing a sequence of bytes.
+ *
  * @since 1.0.0
  */
 public interface ByteSequence extends Iterable<Byte> {
 
+  /**
+   * Supply the length of the sequence. Note: this is not the capacity of any underlying byte array,
+   * but the actual length of the sequence this object represents.
+   *
+   * @return the length of the sequence
+   */
   int length();
 
+  /**
+   * Retrieve a byte at the specified index. Values are between <code>0</code> (for the first byte)
+   * and <code>length() - 1</code> for the last byte.
+   *
+   * @param index the position within the sequence to retrieve
+   * @return the byte at the specified index
+   */
   byte byteAt(int index);
 
+  /**
+   * Retrieve a sequence of bytes from the original sequence. The returned sequence includes all
+   * bytes between <code>start</code> and <code>end - 1</code>, inclusive.
+   *
+   * @param start the index of the first byte to be included in the result
+   * @param end the index after the last byte to be included in the result
+   * @return a byte sequence containing the bytes between <code>start</code> and
+   *         <code>end - 1</code>, inclusive
+   */
   ByteSequence subSequence(int start, int end);
 
-  IntStream bytes();
+  /**
+   * Return an IntStream representation of this byte sequence. This avoids auto-boxing when not
+   * necessary. Each int represents a single byte from the sequence.
+   *
+   * @return a stream of integers, one for each byte in the sequence
+   */
+  IntStream intStream();
 
 }
