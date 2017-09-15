@@ -17,12 +17,18 @@
 
 package org.apache.bytes;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static java.nio.charset.StandardCharsets.US_ASCII;
+import static java.nio.charset.StandardCharsets.UTF_16;
+import static java.nio.charset.StandardCharsets.UTF_16BE;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 
@@ -30,17 +36,15 @@ public class BytesTest {
 
   private static final Bytes BYTES_EMPTY = Bytes.EMPTY;
   private static final Bytes BYTES_STRING = Bytes.of("test String");
-  private static final Bytes BYTES_STRING_CHARSET = Bytes.of("test String with Charset",
-      StandardCharsets.US_ASCII);
+  private static final Bytes BYTES_STRING_CHARSET = Bytes.of("test String with Charset", US_ASCII);
   private static final Bytes BYTES_CHARSEQ = Bytes.of(new StringBuilder("test CharSequence"));
   private static final Bytes BYTES_CHARSEQ_CHARSET = Bytes.of(new StringBuilder(
-      "test CharSequence with Charset"), StandardCharsets.US_ASCII);
+      "test CharSequence with Charset"), US_ASCII);
   private static final Bytes BYTES_BB = Bytes.of(ByteBuffer.wrap("test ByteBuffer"
-      .getBytes(StandardCharsets.US_ASCII)));
-  private static final Bytes BYTES_ARRAY = Bytes.of("test byte[]"
-      .getBytes(StandardCharsets.US_ASCII));
+      .getBytes(US_ASCII)));
+  private static final Bytes BYTES_ARRAY = Bytes.of("test byte[]".getBytes(US_ASCII));
   private static final Bytes BYTES_ARRAY_OFFSET = Bytes.of(
-      "---test byte[] with offset and length---".getBytes(StandardCharsets.US_ASCII), 3, 34);
+      "---test byte[] with offset and length---".getBytes(US_ASCII), 3, 34);
 
   @Test
   public void testToString() {
@@ -70,6 +74,69 @@ public class BytesTest {
     assertTrue(BYTES_STRING.endsWith(BYTES_EMPTY));
     assertTrue(BYTES_STRING.endsWith(Bytes.of("ing")));
     assertFalse(Bytes.of("ing").endsWith(BYTES_STRING));
+  }
+
+  @Test
+  public void testToArray() {
+    assertArrayEquals("".getBytes(US_ASCII), BYTES_EMPTY.toArray());
+    assertArrayEquals("test String".getBytes(UTF_8), BYTES_STRING.toArray());
+    assertArrayEquals("test String with Charset".getBytes(UTF_8), BYTES_STRING_CHARSET.toArray());
+    assertArrayEquals("test CharSequence".getBytes(UTF_8), BYTES_CHARSEQ.toArray());
+    assertArrayEquals("test CharSequence with Charset".getBytes(UTF_8),
+        BYTES_CHARSEQ_CHARSET.toArray());
+    assertArrayEquals("test ByteBuffer".getBytes(UTF_8), BYTES_BB.toArray());
+    assertArrayEquals("test byte[]".getBytes(UTF_8), BYTES_ARRAY.toArray());
+    assertArrayEquals("test byte[] with offset and length".getBytes(UTF_8),
+        BYTES_ARRAY_OFFSET.toArray());
+    // test array with custom charset for String
+    assertArrayEquals("test utf16".getBytes(UTF_16), Bytes.of("test utf16", UTF_16).toArray());
+    // test array with custom charset for CharSequence
+    assertArrayEquals("test ISO_8859_1".getBytes(ISO_8859_1),
+        Bytes.of(new StringBuilder("test ISO_8859_1"), ISO_8859_1).toArray());
+  }
+
+  @Test
+  public void testByteAt() {
+    String s = "1234";
+    Bytes b = Bytes.of(s, UTF_16BE);
+    assertEquals(s.length() * 2, b.length()); // no BOM with UTF_16BE
+    // for each char in string, check that its corresponding bytes exist in the correct position
+    for (int i = 0; i < s.length(); ++i) {
+      int codePoint = s.codePointAt(i);
+      assertEquals(codePoint >> Byte.SIZE, b.byteAt(2 * i)); // check most significant bits
+      assertEquals(codePoint & 0xFF, b.byteAt(2 * i + 1)); // check least significant bits
+    }
+
+    try {
+      b.byteAt(b.length());
+      fail("Previous line should have failed");
+    } catch (IndexOutOfBoundsException e) {
+      // this is expected
+    }
+
+    try {
+      b.byteAt(-1);
+      fail("Previous line should have failed");
+    } catch (IndexOutOfBoundsException e) {
+      // this is expected
+    }
+  }
+
+  @Test
+  public void testLength() {
+    assertEquals(0, BYTES_EMPTY.length());
+    // string length should be equal to array length, because all these use 7-bit ASCII chars with
+    // US_ASCII or UTF_8 encoding
+    assertEquals("test String".length(), BYTES_STRING.length());
+    assertEquals("test String with Charset".length(), BYTES_STRING_CHARSET.length());
+    assertEquals("test CharSequence".length(), BYTES_CHARSEQ.length());
+    assertEquals("test CharSequence with Charset".length(), BYTES_CHARSEQ_CHARSET.length());
+    assertEquals("test ByteBuffer".length(), BYTES_BB.length());
+    assertEquals("test byte[]".length(), BYTES_ARRAY.length());
+    assertEquals("test byte[] with offset and length".length(), BYTES_ARRAY_OFFSET.length());
+
+    // UTF_16 uses 2 bytes per char
+    assertEquals("test UTF_16BE".length() * 2, Bytes.of("test UTF_16BE", UTF_16BE).length());
   }
 
 }
