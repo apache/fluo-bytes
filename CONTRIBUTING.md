@@ -33,7 +33,7 @@ Fluo Bytes:
 Before making a pull request please attempt to run `mvn verify`.  If it fails and you are not sure 
 why, it's OK to go ahead make the pull request with a comment about the failure.
 
-[Git]: http://git-scm.com/
+[Git]: https://git-scm.com/
 [java]: http://openjdk.java.net/
-[Maven]: http://maven.apache.org/
+[Maven]: https://maven.apache.org/
 [contribute]: https://fluo.apache.org/how-to-contribute/
