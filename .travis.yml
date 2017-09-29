@@ -14,7 +14,7 @@
 # limitations under the License.
 language: java
 jdk:
-  - oraclejdk8
+  - openjdk8
 notifications:
   irc:
     channels:
@@ -29,4 +29,4 @@ cache:
     - $HOME/.m2
 # skip pre-fetch of maven dependencies by making install step a NOOP
 install: true
-script: mvn clean verify javadoc:jar
+script: mvn -C clean verify javadoc:jar

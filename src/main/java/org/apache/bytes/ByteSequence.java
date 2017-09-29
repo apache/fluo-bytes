@@ -27,16 +27,16 @@ import java.util.stream.IntStream;
 public interface ByteSequence extends Iterable<Byte> {
 
   /**
-   * Supply the length of the sequence. Note: this is not the capacity of any underlying byte array,
-   * but the actual length of the sequence this object represents.
+   * The length of the sequence this object represents. It does not necessarily reflect the size of
+   * any internal data structures, such as an internal byte array.
    *
    * @return the length of the sequence
    */
   int length();
 
   /**
-   * Retrieve a byte at the specified index. Values are between <code>0</code> (for the first byte)
-   * and <code>length() - 1</code> for the last byte.
+   * Retrieve a byte at the specified index. Valid indices are between <code>0</code> (for the first
+   * byte) and <code>length() - 1</code> for the last byte.
    *
    * @param index the position within the sequence to retrieve
    * @return the byte at the specified index
@@ -45,14 +45,14 @@ public interface ByteSequence extends Iterable<Byte> {
 
   /**
    * Retrieve a sequence of bytes from the original sequence. The returned sequence includes all
-   * bytes between <code>start</code> and <code>end - 1</code>, inclusive.
+   * bytes between <code>begin</code> and <code>end - 1</code>, inclusive.
    *
-   * @param start the index of the first byte to be included in the result
+   * @param begin the index of the first byte to be included in the result
    * @param end the index after the last byte to be included in the result
-   * @return a byte sequence containing the bytes between <code>start</code> and
+   * @return a byte sequence containing the bytes between <code>begin</code> and
    *         <code>end - 1</code>, inclusive
    */
-  ByteSequence subSequence(int start, int end);
+  ByteSequence subSequence(int begin, int end);
 
   /**
    * Return an IntStream representation of this byte sequence. This avoids auto-boxing when not

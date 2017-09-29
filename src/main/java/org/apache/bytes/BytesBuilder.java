@@ -102,8 +102,7 @@ public class BytesBuilder extends AbstractByteSequence {
 
   public BytesBuilder append(Bytes b) {
     ensureCapacity(len + b.length());
-    // note: Bytes always uses all of its internal array, so source offset is 0 here
-    System.arraycopy(b.data, 0, ba, len, b.length());
+    b.copyTo(ba, len);
     len += b.length();
     return this;
   }
@@ -205,8 +204,10 @@ public class BytesBuilder extends AbstractByteSequence {
   }
 
   @Override
-  public ByteSequence subSequence(int start, int end) {
-    return Bytes.of(ba, start, end - start);
+  public BytesBuilder subSequence(int begin, int end) {
+    checkBounds(begin, end);
+    int size = end - begin;
+    return new BytesBuilder(size).append(ba, begin, size);
   }
 
 }

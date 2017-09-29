@@ -17,6 +17,10 @@
 
 package org.apache.bytes;
 
+import java.nio.ByteBuffer;
+
+import org.junit.Test;
+
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.nio.charset.StandardCharsets.UTF_16;
@@ -28,23 +32,19 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.nio.ByteBuffer;
-
-import org.junit.Test;
-
 public class BytesTest {
 
   private static final Bytes BYTES_EMPTY = Bytes.EMPTY;
   private static final Bytes BYTES_STRING = Bytes.of("test String");
   private static final Bytes BYTES_STRING_CHARSET = Bytes.of("test String with Charset", US_ASCII);
   private static final Bytes BYTES_CHARSEQ = Bytes.of(new StringBuilder("test CharSequence"));
-  private static final Bytes BYTES_CHARSEQ_CHARSET = Bytes.of(new StringBuilder(
-      "test CharSequence with Charset"), US_ASCII);
-  private static final Bytes BYTES_BB = Bytes.of(ByteBuffer.wrap("test ByteBuffer"
-      .getBytes(US_ASCII)));
+  private static final Bytes BYTES_CHARSEQ_CHARSET =
+      Bytes.of(new StringBuilder("test CharSequence with Charset"), US_ASCII);
+  private static final Bytes BYTES_BB =
+      Bytes.of(ByteBuffer.wrap("test ByteBuffer".getBytes(US_ASCII)));
   private static final Bytes BYTES_ARRAY = Bytes.of("test byte[]".getBytes(US_ASCII));
-  private static final Bytes BYTES_ARRAY_OFFSET = Bytes.of(
-      "---test byte[] with offset and length---".getBytes(US_ASCII), 3, 34);
+  private static final Bytes BYTES_ARRAY_OFFSET =
+      Bytes.of("---test byte[] with offset and length---".getBytes(US_ASCII), 3, 34);
 
   @Test
   public void testToString() {
@@ -65,6 +65,10 @@ public class BytesTest {
     assertTrue(BYTES_STRING.beginsWith(BYTES_EMPTY));
     assertTrue(BYTES_STRING_CHARSET.beginsWith(BYTES_STRING));
     assertFalse(BYTES_STRING.beginsWith(BYTES_STRING_CHARSET));
+    assertFalse(BYTES_CHARSEQ.beginsWith(BYTES_STRING));
+    assertFalse(Bytes.of("abcdef").beginsWith(Bytes.of("Abcd")));
+    assertFalse(Bytes.of("abcdef").beginsWith(Bytes.of("abcD")));
+    assertFalse(Bytes.of("abcdef").beginsWith(Bytes.of("abCd")));
   }
 
   @Test
@@ -74,6 +78,10 @@ public class BytesTest {
     assertTrue(BYTES_STRING.endsWith(BYTES_EMPTY));
     assertTrue(BYTES_STRING.endsWith(Bytes.of("ing")));
     assertFalse(Bytes.of("ing").endsWith(BYTES_STRING));
+    assertFalse(BYTES_CHARSEQ.endsWith(BYTES_STRING));
+    assertFalse(Bytes.of("abcdef").endsWith(Bytes.of("Cdef")));
+    assertFalse(Bytes.of("abcdef").endsWith(Bytes.of("cdeF")));
+    assertFalse(Bytes.of("abcdef").endsWith(Bytes.of("cdEf")));
   }
 
   @Test
@@ -108,15 +116,15 @@ public class BytesTest {
     }
 
     try {
-      b.byteAt(b.length());
-      fail("Previous line should have failed");
+      int a = b.byteAt(b.length());
+      fail("Previous line should have failed; byte: " + a);
     } catch (IndexOutOfBoundsException e) {
       // this is expected
     }
 
     try {
-      b.byteAt(-1);
-      fail("Previous line should have failed");
+      int a = b.byteAt(-1);
+      fail("Previous line should have failed; byte: " + a);
     } catch (IndexOutOfBoundsException e) {
       // this is expected
     }

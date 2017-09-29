@@ -52,7 +52,7 @@ public final class Bytes extends AbstractByteSequence implements Comparable<Byte
 
   private static final long serialVersionUID = 1L;
 
-  final byte[] data;
+  private final byte[] data;
 
   private transient WeakReference<String> utf8String;
 
@@ -204,6 +204,11 @@ public final class Bytes extends AbstractByteSequence implements Comparable<Byte
    */
   @Override
   public final boolean equals(Object other) {
+    // TODO consider potential optimizations:
+    // 1. use hashcode if computed for both objects already, since we only compute hashcode once and
+    // store it
+    // 2. compare last byte or last 2 bytes first, to quickly see if they are different at the end;
+    // very helpful for sorted data
     return this == other || ((other instanceof Bytes) && Arrays.equals(data, ((Bytes) other).data));
   }
 
@@ -255,9 +260,8 @@ public final class Bytes extends AbstractByteSequence implements Comparable<Byte
     }
     byte[] data;
     if (bb.hasArray()) {
-      data =
-          Arrays.copyOfRange(bb.array(), bb.position() + bb.arrayOffset(),
-              bb.limit() + bb.arrayOffset());
+      data = Arrays.copyOfRange(bb.array(), bb.position() + bb.arrayOffset(),
+          bb.limit() + bb.arrayOffset());
     } else {
       data = new byte[bb.remaining()];
       // duplicate so that it does not change position
@@ -353,64 +357,61 @@ public final class Bytes extends AbstractByteSequence implements Comparable<Byte
   }
 
   /**
-   * Checks if this has the passed suffix
+   * Check if this has the provided suffix.
    *
    * @param suffix is a Bytes object to compare to this
    * @return true or false
    */
   public boolean endsWith(Bytes suffix) {
     Objects.requireNonNull(suffix, "endsWith(Bytes suffix) cannot have null parameter");
-    int startOffset = this.length() - suffix.length();
-
-    if (startOffset < 0) {
+    int suffixLen = suffix.length();
+    int len = length();
+    if (suffixLen > len) {
       return false;
-    } else {
-      int end = startOffset + suffix.length();
-      for (int i = startOffset, j = 0; i < end; i++, j++) {
-        if (this.data[i] != suffix.data[j]) {
-          return false;
-        }
+    }
+
+    // comparing from the back; TODO see if comparing forwards is faster
+    for (int i = suffixLen - 1, j = len - 1; i >= 0; i--, j--) {
+      if (suffix.data[i] != data[j]) {
+        return false;
       }
     }
     return true;
   }
 
   /**
-   * Copy entire Bytes object to specific byte array. Uses the specified offset in the dest byte
-   * array to start the copy.
+   * Copy this entire Bytes object into the destination byte array, <code>dest</code>, at position
+   * <code>destPos</code>.
    *
-   * @param dest destination array
-   * @param destPos starting position in the destination data.
+   * @param dest destination array into which bytes are copied
+   * @param destPos the position in the destination array where the subsequence will be copied
    * @exception IndexOutOfBoundsException if copying would cause access of data outside array
    *            bounds.
    * @exception NullPointerException if either <code>src</code> or <code>dest</code> is
    *            <code>null</code>.
    */
   public void copyTo(byte[] dest, int destPos) {
-    arraycopy(0, dest, destPos, this.length());
+    copyTo(0, dest, destPos, length());
   }
 
   /**
-   * Copy a subsequence of Bytes to specific byte array. Uses the specified offset in the dest byte
-   * array to start the copy.
+   * Copy <code>length</code> bytes from this Bytes object, starting at the <code>begin</code>
+   * position into the destination byte array, <code>dest</code>, at position <code>destPos</code>.
+   * All bytes between <code>begin</code> and <code>begin+length-1</code>, inclusive, are copied.
+   * The destination array must be large enough.
    *
-   * @param begin index of subsequence start (inclusive)
-   * @param end index of subsequence end (exclusive)
-   * @param dest destination array
-   * @param destPos starting position in the destination data.
+   * @param begin index of the beginning of the subsequence to copy (inclusive)
+   * @param dest destination array into which bytes are copied
+   * @param destPos the position in the destination array where the subsequence will be copied
+   * @param length the length of the sequence to copy
    * @exception IndexOutOfBoundsException if copying would cause access of data outside array
    *            bounds.
    * @exception NullPointerException if either <code>src</code> or <code>dest</code> is
    *            <code>null</code>.
    */
-  public void copyTo(int begin, int end, byte[] dest, int destPos) {
-    // this.subSequence(start, end).copyTo(dest, destPos) would allocate another Bytes object
-    arraycopy(begin, dest, destPos, end - begin);
-  }
-
-  private void arraycopy(int begin, byte[] dest, int destPos, int length) {
+  public void copyTo(int begin, byte[] dest, int destPos, int length) {
     // since dest is byte[], we can't get the ArrayStoreException
-    System.arraycopy(this.data, begin, dest, destPos, length);
+    System.arraycopy(data, begin, dest, destPos, length);
   }
 
 }
