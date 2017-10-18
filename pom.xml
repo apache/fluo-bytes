@@ -82,9 +82,43 @@
             <allows />
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>net.revelc.code.formatter</groupId>
+          <artifactId>formatter-maven-plugin</artifactId>
+          <configuration>
+            <!-- skip formatting from parent POM; it's broken and doesn't format javadocs; use old version below -->
+            <skip>true</skip>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
+      <plugin>
+        <groupId>net.revelc.code</groupId>
+        <artifactId>formatter-maven-plugin</artifactId>
+        <version>0.5.2</version>
+        <configuration>
+          <lineEnding>LF</lineEnding>
+          <overrideConfigCompilerVersion>true</overrideConfigCompilerVersion>
+          <configFile>${formatter.config}</configFile>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.fluo</groupId>
+            <artifactId>build-resources</artifactId>
+            <version>${build-resources.version}</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <id>format-source</id>
+            <goals>
+              <goal>format</goal>
+            </goals>
+            <phase>process-sources</phase>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>

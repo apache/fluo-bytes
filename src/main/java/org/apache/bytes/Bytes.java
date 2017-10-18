@@ -185,17 +185,22 @@ public final class Bytes extends AbstractByteSequence implements Comparable<Byte
     if (this == other) {
       return 0;
     } else {
-      int minLen = Math.min(length(), other.length());
-      for (int i = 0, j = 0; i < minLen; i++, j++) {
-        int a = (this.data[i] & 0xff);
-        int b = (other.data[j] & 0xff);
-
-        if (a != b) {
-          return a - b;
-        }
-      }
-      return length() - other.length();
+      return compareTo(other.data);
     }
+  }
+
+  @Override
+  public int compareTo(byte[] bytes) {
+    int minLen = Math.min(length(), bytes.length);
+    for (int i = 0, j = 0; i < minLen; i++, j++) {
+      int a = (this.data[i] & 0xff);
+      int b = (bytes[j] & 0xff);
+
+      if (a != b) {
+        return a - b;
+      }
+    }
+    return length() - bytes.length;
   }
 
   /**
@@ -204,12 +209,41 @@ public final class Bytes extends AbstractByteSequence implements Comparable<Byte
    */
   @Override
   public final boolean equals(Object other) {
-    // TODO consider potential optimizations:
-    // 1. use hashcode if computed for both objects already, since we only compute hashcode once and
-    // store it
-    // 2. compare last byte or last 2 bytes first, to quickly see if they are different at the end;
-    // very helpful for sorted data
-    return this == other || ((other instanceof Bytes) && Arrays.equals(data, ((Bytes) other).data));
+    if (this == other) {
+      return true;
+    }
+    if (other instanceof Bytes) {
+      Bytes otherBytes = (Bytes) other;
+      if (hashCode != 0 && otherBytes.hashCode != 0 && hashCode != otherBytes.hashCode) {
+        // if both hashCodes have been pre-computed (by calling hashCode(), and fail to match, then
+        // they can't be equal
+        return false;
+      }
+      return contentEquals(otherBytes.data);
+    }
+    return false;
+  }
+
+  @Override
+  public boolean contentEquals(byte[] bytes) {
+    if (data.length != bytes.length) {
+      // can't be equal if they differ in length; this is checked again in Arrays.equals, but we
+      // check here because it's a prerequisite for the last byte
+      // comparison optimization below
+      return false;
+    }
+    if (data.length == 0 && bytes.length == 0) {
+      // both are empty
+      return true;
+    }
+    int lastByte = data.length - 1;
+    if (data[lastByte] != bytes[lastByte]) {
+      // at this point, both byte arrays are non-zero and the same length; quickly compare last byte
+      // before checking the full array; this is particularly
+      // helpful for sorted data which have long prefixes in common
+      return false;
+    }
+    return Arrays.equals(data, bytes);
   }
 
   @Override
@@ -260,8 +294,9 @@ public final class Bytes extends AbstractByteSequence implements Comparable<Byte
     }
     byte[] data;
     if (bb.hasArray()) {
-      data = Arrays.copyOfRange(bb.array(), bb.position() + bb.arrayOffset(),
-          bb.limit() + bb.arrayOffset());
+      data =
+          Arrays.copyOfRange(bb.array(), bb.position() + bb.arrayOffset(),
+              bb.limit() + bb.arrayOffset());
     } else {
       data = new byte[bb.remaining()];
       // duplicate so that it does not change position

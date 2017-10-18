@@ -38,13 +38,13 @@ public class BytesTest {
   private static final Bytes BYTES_STRING = Bytes.of("test String");
   private static final Bytes BYTES_STRING_CHARSET = Bytes.of("test String with Charset", US_ASCII);
   private static final Bytes BYTES_CHARSEQ = Bytes.of(new StringBuilder("test CharSequence"));
-  private static final Bytes BYTES_CHARSEQ_CHARSET =
-      Bytes.of(new StringBuilder("test CharSequence with Charset"), US_ASCII);
-  private static final Bytes BYTES_BB =
-      Bytes.of(ByteBuffer.wrap("test ByteBuffer".getBytes(US_ASCII)));
+  private static final Bytes BYTES_CHARSEQ_CHARSET = Bytes.of(new StringBuilder(
+      "test CharSequence with Charset"), US_ASCII);
+  private static final Bytes BYTES_BB = Bytes.of(ByteBuffer.wrap("test ByteBuffer"
+      .getBytes(US_ASCII)));
   private static final Bytes BYTES_ARRAY = Bytes.of("test byte[]".getBytes(US_ASCII));
-  private static final Bytes BYTES_ARRAY_OFFSET =
-      Bytes.of("---test byte[] with offset and length---".getBytes(US_ASCII), 3, 34);
+  private static final Bytes BYTES_ARRAY_OFFSET = Bytes.of(
+      "---test byte[] with offset and length---".getBytes(US_ASCII), 3, 34);
 
   @Test
   public void testToString() {

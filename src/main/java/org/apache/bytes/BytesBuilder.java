@@ -210,4 +210,16 @@ public class BytesBuilder extends AbstractByteSequence {
     return new BytesBuilder(size).append(ba, begin, size);
   }
 
+  @Override
+  public int compareTo(byte[] bytes) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public boolean contentEquals(byte[] bytes) {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
 }

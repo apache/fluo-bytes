@@ -62,4 +62,20 @@ public interface ByteSequence extends Iterable<Byte> {
    */
   IntStream intStream();
 
+  /**
+   * Compares this sequence with the provided byte array using a lexicographical comparison.
+   *
+   * @param bytes the byte array with which to compare this sequence
+   * @return a value following the same conventions as {@link Comparable#compareTo(Object)}
+   */
+  int compareTo(byte[] bytes);
+
+  /**
+   * Determines if the contents of this byte sequence is equivalent to the content of the provided
+   * byte array.
+   *
+   * @param bytes the byte array with which to compare this sequence
+   * @return true if the bytes they represent are the same
+   */
+  boolean contentEquals(byte[] bytes);
 }

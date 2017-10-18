@@ -49,8 +49,8 @@ abstract class AbstractByteSequence implements ByteSequence {
 
   protected void checkBounds(int begin, int end) {
     if (begin > end) {
-      throw new IndexOutOfBoundsException(
-          "End position (" + end + ") occurs before begin position (" + begin + ")");
+      throw new IndexOutOfBoundsException("End position (" + end
+          + ") occurs before begin position (" + begin + ")");
     }
     checkBounds(begin, "Begin position");
     checkBounds(begin, "End position");
