@@ -129,7 +129,7 @@ public final class Bytes extends AbstractByteSequence implements Comparable<Byte
   }
 
   /**
-   * Creates UTF-8 String using Bytes data
+   * Provides a String representation, decoding the bytes as UTF-8
    */
   @Override
   public String toString() {
