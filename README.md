@@ -91,10 +91,10 @@ fields accessible outside the project's packages.
 [blog]: https://fluo.apache.org/blog/2016/11/10/immutable-bytes/
 [semver]: http://semver.org/spec/v2.0.0.html
 [fluo]: https://fluo.apache.org/
-[ti]: https://travis-ci.org/apache/fluo-bytes.svg?branch=master
+[ti]: https://travis-ci.org/apache/fluo-bytes.svg?branch=main
 [tl]: https://travis-ci.org/apache/fluo-bytes
 [li]: http://img.shields.io/badge/license-ASL-blue.svg
-[ll]: https://github.com/apache/fluo-bytes/blob/master/LICENSE
+[ll]: https://github.com/apache/fluo-bytes/blob/main/LICENSE
 [mi]: https://maven-badges.herokuapp.com/maven-central/org.apache.fluo/fluo-bytes/badge.svg
 [ml]: https://maven-badges.herokuapp.com/maven-central/org.apache.fluo/fluo-bytes/
 [ji]: https://javadoc-emblem.rhcloud.com/doc/org.apache.fluo/fluo-bytes/badge.svg
