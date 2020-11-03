@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.apache.fluo</groupId>
+    <artifactId>fluo-parent</artifactId>
+    <version>2</version>
+  </parent>
+  <artifactId>fluo-bytes</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <name>Apache Fluo Bytes</name>
+  <description>A library for working with bytes with an extremely stable API</description>
+  <inceptionYear>2017</inceptionYear>
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <scm>
+    <connection>scm:git:https://gitbox.apache.org/repos/asf/fluo-bytes.git</connection>
+    <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/fluo-bytes.git</developerConnection>
+    <tag>HEAD</tag>
+    <url>https://gitbox.apache.org/repos/asf?p=fluo-bytes.git</url>
+  </scm>
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/apache/fluo-bytes/issues</url>
+  </issueManagement>
+  <properties>
+    <findbugs.maxRank>20</findbugs.maxRank>
+    <formatter.config>${project.basedir}/src/main/build-resources/eclipse-formatter.xml</formatter.config>
+    <mdep.failOnWarning>true</mdep.failOnWarning>
+    <releaseProfiles>fluo-bytes-release</releaseProfiles>
+  </properties>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.12</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>net.revelc.code</groupId>
+          <artifactId>apilyzer-maven-plugin</artifactId>
+          <version>1.0.1</version>
+          <configuration>
+            <includes>
+              <include>org[.]apache[.]bytes[.].*</include>
+            </includes>
+            <excludes />
+            <allows />
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>net.revelc.code.formatter</groupId>
+          <artifactId>formatter-maven-plugin</artifactId>
+          <configuration>
+            <!-- skip formatting from parent POM; it's broken and doesn't format javadocs; use old version below -->
+            <skip>true</skip>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>net.revelc.code</groupId>
+        <artifactId>formatter-maven-plugin</artifactId>
+        <version>0.5.2</version>
+        <configuration>
+          <lineEnding>LF</lineEnding>
+          <overrideConfigCompilerVersion>true</overrideConfigCompilerVersion>
+          <configFile>${formatter.config}</configFile>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.fluo</groupId>
+            <artifactId>build-resources</artifactId>
+            <version>${build-resources.version}</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <id>format-source</id>
+            <goals>
+              <goal>format</goal>
+            </goals>
+            <phase>process-sources</phase>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>api-check</id>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <configuration>
+              <checkstyleRules>
+                <module name="Checker">
+                  <module name="TreeWalker">
+                    <module name="RegexpSinglelineJava">
+                      <!--check that no third-party deps are used-->
+                      <property name="format" value="import\s+(?!org[.]apache[.]bytes[.]|java[.]).*" />
+                      <property name="ignoreComments" value="true" />
+                      <property name="message" value="Non-Java class imported" />
+                    </module>
+                  </module>
+                </module>
+              </checkstyleRules>
+              <failOnViolation>true</failOnViolation>
+              <outputFile>${project.build.directory}/checkstyle-results-imports.xml</outputFile>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>analyze</id>
+            <goals>
+              <goal>analyze-only</goal>
+            </goals>
+            <configuration>
+              <failOnWarning>${mdep.failOnWarning}</failOnWarning>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>net.revelc.code</groupId>
+        <artifactId>apilyzer-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>apilyzer</id>
+            <goals>
+              <goal>analyze</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  <profiles>
+    <profile>
+      <id>fluo-bytes-release</id>
+      <!-- some properties to make the release build a bit faster -->
+      <properties>
+        <checkstyle.skip>true</checkstyle.skip>
+        <findbugs.skip>true</findbugs.skip>
+        <modernizer.skip>true</modernizer.skip>
+        <skipITs>true</skipITs>
+        <skipTests>true</skipTests>
+      </properties>
+    </profile>
+  </profiles>
+</project>
